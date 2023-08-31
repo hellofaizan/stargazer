@@ -12,11 +12,11 @@ on:
       starCount:
         description: "Star Count"
         required: true
-        default: 100
+        default: "100"
       duration:
         description: "Duration (seconds)"
         required: false
-        default: 15
+        default: "15"
 name: Render video
 jobs:
   render:
@@ -29,17 +29,15 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16
-          cache: 'npm'
-      - name: Install dependencies (ffmpeg and fonts)
+      - name: Install Fallback fonts (fonts)
         run: |
           sudo apt-get update -yqq
           sudo apt-get install -yq --no-install-recommends \
-            ffmpeg \
             fonts-noto-core fonts-noto-cjk fonts-noto-color-emoji fonts-noto-mono
       - name: Install dependencies (node modules)
         run: npm i
-      - name: Inject configurations
-        run: echo $WORKFLOW_INPUT | tee input-props.json | jq -C '.'  # Inject to file, inspect to logs
+      - name: Define input props
+        run: echo $WORKFLOW_INPUT | tee input-props.json | jq -C '.' # Inject to file, inspect to logs
         env:
           WORKFLOW_INPUT: ${{ toJson(github.event.inputs) }}
       - name: Render video
@@ -50,4 +48,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: out.mp4
-          path: out.mp4
+          path: out/Main.mp4
